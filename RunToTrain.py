@@ -1,5 +1,5 @@
 import sys
-sys.path.insert(0, 'E:\Development\libraries')
+sys.path.insert(0, '../libraries')
 from flask import Flask
 from flask import render_template
 from flask import url_for
@@ -118,7 +118,7 @@ def newSearch():
 	stationResults = [ {'station' : 'New Malden', 'distance' : 5.1, 'longitude' : 42312, 'latitude' : 12312 }, \
 					{'station' : 'Worcester Park', 'distance' : 4.2, 'longitude' : 32412, 'latitude' : 87312 } ]
 	stationResultsJson = (json.dumps(stationResults))
-	print(stationResultsJson)
+	#print(stationResultsJson)
 	return stationResultsJson
 
 	routeResults = [ {'mode' : 'Train', 'departureTime' : '21:04', 'arrivalTime' : '21:06'} ]
