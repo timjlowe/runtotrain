@@ -7,17 +7,7 @@ function testFunction()
 
 function ajaxCallForStations(location, distance) 
 	{
-		var htmlCode = '';
 
-		$.ajax({
-			type: "GET",
-			url: "/newSearch",
-			//contentType: "application/json; charset=utf-8",
-			//dataType: 'json',
-			//data: {location: location, distance: distance},
-
-		
-		});
 	}
 //DOESNT WORK NEED TO FIX
 function displayStations(stationResponse)	
@@ -31,7 +21,38 @@ function displayStations(stationResponse)
 		//).appendTo('#station_table');
 		//})
 	}
-function getStations(location, distance)
+function getStations(location, distance, elementId)
 	{
-		ajaxCallForStations(location, distance).done(displayStations);
+		var htmlCode = '';
+
+		$.ajax({
+			type: "POST",
+			url: "/newSearch",
+			contentType: "application/json; charset=utf-8",
+			dataType: 'json',
+			data: {location: location, distance: distance},
+			success: function(data) {
+				//Setup Table
+
+				var table = $("<table>").attr("border", "1");
+				table.append(row = $("<tr>"));
+					$.each(data[0], function (key ,value) {
+		 				row.append("<th>" + key);
+		    		})
+
+				$.each(data, function (i,value) {
+					table.append(row = $("<tr>"));
+						$.each(value, function (key,elementValue) {
+		 				row.append("<td>" + elementValue + "</td>");
+		   			})
+		   		})
+
+				$("#"+elementId).html(table)
+
+		    },
+  			error: function(e) {
+				//called when there is an error
+				//console.log(e.message);
+			}	
+		});
 	}
