@@ -114,14 +114,29 @@ def TJLnewSearch():
 def newSearch():
 
 	#print (str(json.loads(request.form)))
-
-	stationResults = [ {'station' : 'New Malden', 'distance' : 5.1, 'longitude' : 42312, 'latitude' : 12312 }, \
-					{'station' : 'Worcester Park', 'distance' : 4.2, 'longitude' : 32412, 'latitude' : 87312 } ]
+	#Sample data
+	stationResults = [ {'station' : 'New Malden', 'distance' : 5.1, 'longitude' : 42312, 'latitude' : 12312,\
+	'routes' : [  \
+	{ "route_id" : 1, \
+	'legs' : [ \
+	{'leg' : 1, 'type' : 'train', 'start_station' : 'Ewell West', 'time' : '20:32'}, \
+	{'leg' : 2, 'type' : 'train', 'start_station' : 'Waterloo', 'time' : '21:09'} ] } ] }, \
+	{'station' : 'Worcester Park', 'distance' : 4.2, 'longitude' : 32412, 'latitude' : 87312, \
+	'routes' : [ \
+	{ "route_id" : 1, \
+	'legs' : [ \
+	{'leg' : 1, 'type' : 'train', 'start_station' : 'Ewell East', 'time' : '20:45'}, \
+	{'leg' : 2, 'type' : 'train', 'start_station' : 'Victoria', 'time' : '21:04'} ] }, \
+	{ "route_id" : 2, \
+	'legs' : [ \
+	{'leg' : 1, 'type' : 'train', 'start_station' : 'New Malden', 'time' : '20:55'}, \
+	{'leg' : 2, 'type' : 'train', 'start_station' : 'Victoria', 'time' : '21:04'} ] } ] } ]
+						
 	stationResultsJson = (json.dumps(stationResults))
 	#print(stationResultsJson)
 	return stationResultsJson
 
-	routeResults = [ {'mode' : 'Train', 'departureTime' : '21:04', 'arrivalTime' : '21:06'} ]
+	#routeResults = [ {'mode' : 'Train', 'departureTime' : '21:04', 'arrivalTime' : '21:06'} ]
 
 
 

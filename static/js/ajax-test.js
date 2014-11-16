@@ -21,8 +21,27 @@ function displayStations(stationResponse)
 		//).appendTo('#station_table');
 		//})
 	}
+
+function getStationAndRoutes(targetElement)
+	{
+    //<dd class="accordion-navigation">
+    //	<a href="#panel3">Accordion 3</a>
+    //	<div id="panel3" class="content">
+    //  		Panel 3. Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+    //	</div>  
+
+	var accordian = $("<dd>, { 'class': 'accordion-navigation'}");
+		accordian.append('<a href="#panel3"> Accordian3</a>');
+		accordian.append('<div id="panel3" class="content">').append("TEXTTEXT");
+
+		$(targetElement).html(accordian)
+
+    }
+
+
 function getStations(location, distance, elementId)
 	{
+		//Initial go and displaying results
 		var htmlCode = '';
 
 		$.ajax({
@@ -34,7 +53,7 @@ function getStations(location, distance, elementId)
 			success: function(data) {
 				//Setup Table
 
-				var table = $("<table>").attr("border", "1");
+				var table = $("<table>")//.attr("border", "1");
 				table.append(row = $("<tr>"));
 					$.each(data[0], function (key ,value) {
 		 				row.append("<th>" + key);
@@ -55,4 +74,10 @@ function getStations(location, distance, elementId)
 				//console.log(e.message);
 			}	
 		});
+		getStationAndRoutes("#queryResults2")
 	}
+
+
+
+
+
