@@ -2,7 +2,8 @@ import urllib.parse
 import urllib.request
 import httplib2
 import json
-from runtotrainapp import apiKeys
+import apiKeys
+
 
 def geoCodeLocation(location):
 	geocodeURL='https://maps.googleapis.com/maps/api/geocode/json?'

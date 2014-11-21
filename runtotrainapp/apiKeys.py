@@ -1,9 +1,8 @@
-from runtotrainapp import app
 #If False, will use any public keys that are available.
+useTimsApiKeys = False
 
 def getTransportApiKey():
 	''' Return TransportApiKeys '''
-	api_key = {}
 	if (app.config['USE_TIMS_API_KEYS'] == True):
 		api_key = {'app_id' : 'bdd013aa', 'key' : 'd3c6ec9a4b3b831510289fe15d36abf4'}
 	else:
