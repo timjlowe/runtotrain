@@ -157,7 +157,7 @@ class TransportApi:
 				#Legs of a Route
 				while j < len(routes[i]['route_parts']):
 					if routes[i]['route_parts'][j]['mode'] != 'foot':
-						legs.append({'legId' : str(j), \
+						legs.append({'legId' : str(j+1), \
 							'mode' : routes[i]['route_parts'][j]['mode'], \
 							'Departure Station' : routes[i]['route_parts'][j]['from_point_name'], \
 							'Destination Station' : routes[i]['route_parts'][j]['to_point_name'], \
@@ -171,8 +171,8 @@ class TransportApi:
 				processedRouteResults.append({'routeID' : i+1, 'totalDuration' : totalDuration, 'legs' : legs})
 		else:
 			print ('No results')
-		print ('Processed Route Results')
-		print (processedRouteResults)
+		#print ('Processed Route Results')
+		#print (processedRouteResults)
 			#A station may be in range but have no way of getting to the specified destination at the departure time specified.
 		return processedRouteResults
 		
@@ -223,12 +223,14 @@ class TransportApi:
 			print ('RoutingURL: ' + routingURL)
 			routeResults = self.makeRoutingCall(routingURL, targetStations[i]['runTime'])			
 
-			stationRouteResults.append({'station_name' : targetStations[i]['station_name'], \
-				'distance' : targetStations[i]['distance'], \
-				'runTime' : targetStations[i]['runTime'], \
-				'routes' : routeResults })
-
+			if len(routeResults) >= 1:
+				stationRouteResults.append({'station_name' : targetStations[i]['station_name'], \
+					'distance' : targetStations[i]['distance'], \
+					'runTime' : targetStations[i]['runTime'], \
+					'routes' : routeResults })
 			i = i + 1
-			if i >= maximumApiCalls:
+
+			if (i >= maximumApiCalls):
+				print ('break!')
 				break
 		return stationRouteResults			
