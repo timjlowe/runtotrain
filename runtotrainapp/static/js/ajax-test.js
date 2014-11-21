@@ -1,10 +1,4 @@
 
-
-function testFunction()
-	{
-		document.write("YOOOOOOOHOOOOO");
-	}	
-
 function ajaxCallForStations(location, distance) 
 	{
 
@@ -22,82 +16,73 @@ function displayStations(stationResponse)
 		//})
 	}
 
-function addAcordian(targetElement, routeData)
+function addAcordian(targetElement, accordianNumber, routeData)
 	{
-    //<dd class="accordion-navigation">
-    //	<a href="#panel3">Accordion 3</a>
-    //	<div id="panel3" class="content">
-    //  		Panel 3. Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-    //	</div>  
+    //First parameter is where to put the accordian on the page, the second is the table data to show in the accordian.
 
-
-	//Count of the number of accordian
-	countOfAccordians = countOfAccordians +1;
-
-    var routeDataTitle = routeData['station'] + ' - Distance: ' + routeData['distance'];
+	//Title displayed on the rolled up accordian
+    var routeDataTitle = 'Run to: ' + routeData['station_name'] + ' station, ' + routeData['distance'] + 'km away. Running time: ' + routeData['runTime'];
 	var routeDataTable = $("<table>")
 	var	routeDataTableHeader = '<th>Leg</th><th>Start Station</th><th>Time</th>';
 
 	routeDataTable.append(row = $(routeDataTableHeader));
 
+	//Add the data rows to the table showing the route steps.
+	$.each(routeData['routes'][0]['legs'], function (i,value) {
+		var routeDataTableRow = '<tr><td>' +
+			value['legId'] + '</td>' + '<td>' +
+			value['Departure Station'] + '</td>' + '<td>' +
+			value['Train Duration']
+			+ '</td></tr>';
 
-	//targetElement.append(routeDataTable, routeDataTableHeader);
+		routeDataTable.append(routeDataTableRow);
 
-		$.each(routeData['legs'], function (i,value) {
-			var routeDataTableRow = '<tr><td>' + value['leg'] + '</td>' +
-				'<td>' + value['start_station'] + '</td>' + 
-				'<td>' + value['time'] + '</td></tr>';
-				//alert(value['time'])
+		})
 
-			routeDataTable.append(routeDataTableRow);
-
-   		})
-
-		//$("#"+targetElement).html(routeDataTable)
-
+	//Build the accordian
 	var accordian = $("<dd>, { 'class': 'accordion-navigation'}");
-		accordian.append('<a href="#panel'+ countOfAccordians +'">' + routeDataTitle + '</a>');
-		//accordian.append('<a href="#' + accordianName + '"">' + routeDataTitle + '</a>');
-		accordian.append('<div id="panel' + countOfAccordians +'" class="content">');
-		//accordian.append('<div id="' + accordianName + '" class="content">');
-		
-	//var accordian = $("<dd>, { 'class': 'accordion-navigation'}");
-	//	accordian.append('<a href="#' + accordianName + '>' + routeDataTitle + '</a>');
-	//	accordian.append('<div id="' + accordianName + '" class="content">');
-		
-		//ToDo Need to add body of accordian
+		accordian.append('<a href="#panel'+ accordianNumber +'">' + routeDataTitle + '</a>');
+		accordian.append('<div id="panel' + accordianNumber +'" class="content">');
+	
 		$('#' + targetElement).append(accordian);
-		$('#panel'+ countOfAccordians).append(routeDataTable);
-
+		//Add the data to the accordian - couldn't get this to work if done before adding accordian to the page.
+		$('#panel'+ accordianNumber).append(routeDataTable);
     }
 
-function getStations(location, distance, elementId)
+function getStations(startAddress, destinationAddress, pace, runDistance, startDateTime, elementId)
 	{
+	//RouteQuery(startAddress=request.form['startAddress'],destinationAddress=request.form['destinationAddress'], \
+	//pace=request.form['pace'],	distance=request.form['runDistance'], startDateTime=request.form['startDateTime'])
+
 		countOfAccordians = 0;
 		//Initial go and displaying results
 		var htmlCode = '';
 
 		$.ajax({
-			type: "POST",
-			url: "/newSearch",
+			type: 'POST',
+			url: '/newSearch',
 			contentType: "application/json; charset=utf-8",
 			dataType: 'json',
-			data: {location: location, distance: distance},
+			data: JSON.stringify({startAddress: startAddress,
+				destinationAddress: destinationAddress,
+				pace: pace,
+				runDistance: runDistance,
+				startDateTime: startDateTime}),
 			success: function(data) {
 
 				//TODO Need to sort results ready to display
-
+				countOfAccordians = 0
 
 				//This works: $.each(data["results"][0], function (key ,value) {
-					$.each(data['results'], function (key ,routeResults) {
-						//document.write(routeResults['distance'])
-						//What do we pass in above?
-						//routeOptionOne =?
+					$.each(data, function (key ,routeResults) {
+						
 					//Send each routeOption after sorting to be displayed
-						addAcordian(elementId, routeResults)
+						addAcordian(elementId, countOfAccordians, routeResults)
+						countOfAccordians = countOfAccordians +1
 		    		})
 		    },
   			error: function(e) {
+
 				//called when there is an error
 				//console.log(e.message);
 			}	
