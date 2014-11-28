@@ -21,24 +21,33 @@ function addAcordian(targetElement, accordianNumber, routeData)
     //First parameter is where to put the accordian on the page, the second is the table data to show in the accordian.
 
 	//Title displayed on the rolled up accordian
-    var routeDataTitle = 'Run to: ' + routeData['station_name'] + ' station, ' + routeData['distance'] + 'km away. Running time: ' + routeData['runTime'];
-	var routeDataTable = $("<table>")
-	var	routeDataTableHeader = '<th>Leg</th><th>Start Station</th><th>Time</th>';
-
-	routeDataTable.append(row = $(routeDataTableHeader));
+    var routeDataTitle = routeData['station_name'] + ' station, ' + (routeData['distance']).toFixed(1) + 'km away. Running time: ' + (routeData['runTime']).toFixed(0) + 'mins';
+	var routeDataTable = $('<table>');
+	//var	routeDataTableHeader = '<th>Leg</th><th>Start Station</th><th>Time</th>';
+	var	routeDataTableHeader =  '<tr>';
+	
+	$.each(routeData['routes'][0]['legs'][0], function(key, value) {	
+    	routeDataTableHeader = routeDataTableHeader + '<th>' + key + '</th>';
+		});
+	routeDataTableHeader +- '</tr>';
+	routeDataTable.append(routeDataTableHeader);
 
 	//Add the data rows to the table showing the route steps.
-	$.each(routeData['routes'][0]['legs'], function (i,value) {
-		var routeDataTableRow = '<tr><td>' +
-			value['legId'] + '</td>' + '<td>' +
-			value['Departure Station'] + '</td>' + '<td>' +
-			value['Train Duration']
-			+ '</td></tr>';
+	$.each(routeData['routes'], function (i,valueRoute) {
+		$.each(valueRoute['legs'], function (i,valueRow) {
+			var routeDataTableRow = '<tr>';
+			$.each( valueRow, function (key, value){
+    			routeDataTableRow = routeDataTableRow + '<td>' + value + '</td>';
+    		});
+    		routeDataTableRow += '</tr>';
+			routeDataTable.append(routeDataTableRow);
+		});
+		var summaryRow = '<tr><td><b>Summary: Arrival Time: ' + 'Total Travel Time: ' + valueRoute['totalDuration'] + 'Train Changes: ' + '</b></td></tr>'
+		routeDataTable.append(summaryRow)
 
-		routeDataTable.append(routeDataTableRow);
-
-		})
-
+	});
+	
+	console.log(routeDataTable);
 	//Build the accordian
 	var accordian = $("<dd>, { 'class': 'accordion-navigation'}");
 		accordian.append('<a href="#panel'+ accordianNumber +'">' + routeDataTitle + '</a>');
@@ -54,9 +63,10 @@ function getStations(startAddress, destinationAddress, pace, runDistance, startD
 	//RouteQuery(startAddress=request.form['startAddress'],destinationAddress=request.form['destinationAddress'], \
 	//pace=request.form['pace'],	distance=request.form['runDistance'], startDateTime=request.form['startDateTime'])
 
-		countOfAccordians = 0;
+		//countOfAccordians = 0;
 		//Initial go and displaying results
 		var htmlCode = '';
+		$('#' + elementId).empty();
 
 		$.ajax({
 			type: 'POST',
@@ -84,7 +94,7 @@ function getStations(startAddress, destinationAddress, pace, runDistance, startD
   			error: function(e) {
 
 				//called when there is an error
-				//console.log(e.message);
+				console.log(e.message);
 			}	
 		});	
 	}

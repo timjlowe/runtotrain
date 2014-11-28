@@ -3,7 +3,10 @@ import apiKeys
 import urllib.request
 import json
 from datetime import datetime, timedelta
-from runtotrainapp import app
+try:
+	from runtotrainapp import app
+except ImportError:
+	print ('Error importing runtotrainapp')
 
 class TransportApi:
 	def __init__(self, routeQuery):
@@ -34,20 +37,25 @@ class TransportApi:
 			print ('JSON read from file1')
 			try:
 				with open(app.config['FILENAME']) as json_data:
-					stationsJSON = json.loads(json_data)
-					json_data.close()
-			except (IOError):
-				print ('Error opening: ' + app.config['FILENAME'])
+					stationsJSON = json.load(json_data)
+				json_data.close()
+			except Exception as err:
+				print ('Error opening: ' + app.config['FILENAME'] + str(err))
 		else:
-			stationResponse = urllib.request.urlopen(stationURL)
-			stationsJSON = json.loads(stationResponse.readall().decode('utf-8'))
+			try:
+				stationResponse = urllib.request.urlopen(stationURL)
+				stationsJSON = json.loads(stationResponse.readall().decode('utf-8'))
 			
+			except (URLError(err)):
+				print ('Error connecting to: ' + stationURL)
+				return ('Error getting station data')
+
 			if app.config['WRITE_TO_FILE'] == True:
 				with open(app.config['FILENAME'], 'w') as outfile:
 					json.dump(stationsJSON, outfile, sort_keys = True, indent = 4, ensure_ascii=False)
 
-		#print ('Stations JSON')
-		#print (json.dumps(stationsJSON, indent = 4))
+		print ('Stations JSON')
+		print (json.dumps(stationsJSON, indent = 4))
 
 		if ('error' in stationsJSON):
 		#TODO How do we display errors to the gui?			
@@ -140,8 +148,13 @@ class TransportApi:
 	def makeRoutingCall(self, routingURL, runTime):
 		'''Query routing service for routes for the specified station and then add them to the results list'''
 		#TODO Need to handle errors e.g. :{"error":"Not found"}
-		routingResponse = urllib.request.urlopen(routingURL)
-		routingResults = json.loads(routingResponse.readall().decode('utf-8'))
+		try:
+			routingResponse = urllib.request.urlopen(routingURL)
+			routingResults = json.loads(routingResponse.readall().decode('utf-8'))
+		except  URLError(err):
+			print ('Error opening: ' + routingURL)
+			return ('Error')
+
 		processedRouteResults=[]
 
 		#Process routing results adding required fields to the results List.
@@ -157,8 +170,8 @@ class TransportApi:
 				#Legs of a Route
 				while j < len(routes[i]['route_parts']):
 					if routes[i]['route_parts'][j]['mode'] != 'foot':
-						legs.append({'legId' : str(j+1), \
-							'mode' : routes[i]['route_parts'][j]['mode'], \
+						legs.append({'Journey Leg' : str(j+1), \
+							'Mode' : routes[i]['route_parts'][j]['mode'], \
 							'Departure Station' : routes[i]['route_parts'][j]['from_point_name'], \
 							'Destination Station' : routes[i]['route_parts'][j]['to_point_name'], \
 							'Train terminates' : routes[i]['route_parts'][j]['destination'], \
@@ -234,3 +247,13 @@ class TransportApi:
 				print ('break!')
 				break
 		return stationRouteResults			
+
+if __name__ == '__main__':
+	class app():
+		config = {}
+		def __init__(self):
+			self.config={'READ_FROM_FILES' : True, 'FILENAME' : 'stations.txt'}
+
+	app = app()	
+	transportapi = TransportApi('')
+	transportapi.doStationLookup('http://transportapi.com/v3/uk/train/stations/near.json?lon=-0.2427249&lat=51.3481645&page=1&api_key=d9307fd91b0247c607e098d5effedc97&app_id=03bf8009')

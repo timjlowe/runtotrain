@@ -12,7 +12,11 @@ def geoCodeLocation(location):
 	
 	lookupURL = geocodeURL + urllib.parse.urlencode({'address' : location.getAddress()})
 	print(lookupURL)
-	googleResponse = urllib.request.urlopen(lookupURL)
+	try:
+		googleResponse = urllib.request.urlopen(lookupURL)
+	except  URLError(err):
+		print ('Error connceting to: ' + lookupURL)
+		return ('Error')
 
 	#TODO: Check the response header in order to select the correct encoding format rather than assuming utf-8
 	decodedResponse = json.loads(googleResponse.readall().decode('utf-8'))
