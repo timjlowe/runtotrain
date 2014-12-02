@@ -25,9 +25,12 @@ function addAcordian(targetElement, accordianNumber, routeData)
 	var routeDataTable = $('<table>');
 	//var	routeDataTableHeader = '<th>Leg</th><th>Start Station</th><th>Time</th>';
 	var	routeDataTableHeader =  '<tr>';
+	var tableCols = routeData['routes'][0]['legs'][0].length
 	
-	$.each(routeData['routes'][0]['legs'][0], function(key, value) {	
-    	routeDataTableHeader = routeDataTableHeader + '<th>' + key + '</th>';
+	$.each(routeData['routes'][0]['legs'][0], function(key, value) {
+
+	//Need to correctly handle the array here.	
+    	routeDataTableHeader = routeDataTableHeader + '<th>' + value[1] + '</th>';
 		});
 	routeDataTableHeader +- '</tr>';
 	routeDataTable.append(routeDataTableHeader);
@@ -37,12 +40,12 @@ function addAcordian(targetElement, accordianNumber, routeData)
 		$.each(valueRoute['legs'], function (i,valueRow) {
 			var routeDataTableRow = '<tr>';
 			$.each( valueRow, function (key, value){
-    			routeDataTableRow = routeDataTableRow + '<td>' + value + '</td>';
+    			routeDataTableRow = routeDataTableRow + '<td>' + value[2] + '</td>';
     		});
     		routeDataTableRow += '</tr>';
 			routeDataTable.append(routeDataTableRow);
 		});
-		var summaryRow = '<tr><td><b>Summary: Arrival Time: ' + 'Total Travel Time: ' + valueRoute['totalDuration'] + 'Train Changes: ' + '</b></td></tr>'
+		var summaryRow = '<tr><td colspan="' + tableCols + '"><b>Total Travel Time (inc Run): ' + valueRoute['totalDuration'] + '</b></td></tr>'
 		routeDataTable.append(summaryRow)
 
 	});
@@ -65,6 +68,12 @@ function getStations(startAddress, destinationAddress, pace, runDistance, startD
 
 		//countOfAccordians = 0;
 		//Initial go and displaying results
+		console.log(startAddress)
+		console.log(destinationAddress)
+		console.log(pace)
+		console.log(runDistance)
+		console.log(startDateTime)
+		console.log(elementId)
 		var htmlCode = '';
 		$('#' + elementId).empty();
 

@@ -170,14 +170,14 @@ class TransportApi:
 				#Legs of a Route
 				while j < len(routes[i]['route_parts']):
 					if routes[i]['route_parts'][j]['mode'] != 'foot':
-						legs.append({'Journey Leg' : str(j+1), \
-							'Mode' : routes[i]['route_parts'][j]['mode'], \
-							'Departure Station' : routes[i]['route_parts'][j]['from_point_name'], \
-							'Destination Station' : routes[i]['route_parts'][j]['to_point_name'], \
-							'Train terminates' : routes[i]['route_parts'][j]['destination'], \
-							'Departure Time' : routes[i]['route_parts'][j]['departure_time'], \
-							'Arrival Time' : routes[i]['route_parts'][j]['arrival_time'], \
-							'Train Duration' :routes[i]['route_parts'][j]['duration'] } )
+						legs.append([[0, 'Journey Leg', str(j+1)], \
+							[1, 'Mode', routes[i]['route_parts'][j]['mode']], \
+							[2, 'Departure Station', routes[i]['route_parts'][j]['from_point_name']], \
+							[3, 'Destination Station' , routes[i]['route_parts'][j]['to_point_name']], \
+							[4, 'Train terminates' , routes[i]['route_parts'][j]['destination']], \
+							[5, 'Departure Time' , routes[i]['route_parts'][j]['departure_time']], \
+							[6, 'Arrival Time' , routes[i]['route_parts'][j]['arrival_time']], \
+							[7, 'Train Duration' , routes[i]['route_parts'][j]['duration']]]  )
 					j=j+1
 
 				i=i+1
@@ -235,7 +235,7 @@ class TransportApi:
 			routingURL = routingBaseURL + routingParams
 			print ('RoutingURL: ' + routingURL)
 			routeResults = self.makeRoutingCall(routingURL, targetStations[i]['runTime'])			
-
+			print (routeResults)
 			if len(routeResults) >= 1:
 				stationRouteResults.append({'station_name' : targetStations[i]['station_name'], \
 					'distance' : targetStations[i]['distance'], \
@@ -256,4 +256,7 @@ if __name__ == '__main__':
 
 	app = app()	
 	transportapi = TransportApi('')
-	transportapi.doStationLookup('http://transportapi.com/v3/uk/train/stations/near.json?lon=-0.2427249&lat=51.3481645&page=1&api_key=d9307fd91b0247c607e098d5effedc97&app_id=03bf8009')
+	#transportapi.doStationLookup('http://transportapi.com/v3/uk/train/stations/near.json?lon=-0.2427249&lat=51.3481645&page=1&api_key=d9307fd91b0247c607e098d5effedc97&app_id=03bf8009')
+	transportapi.makeRoutingCall('http://transportapi.com/v3/uk/public/journey/from/stop:Waddon/to/lonlat:-0.0235333,51.5054306/at/2014-12-02/14:21.json?modes=train-tube-dlr-overground&api_key=d9307fd91b0247c607e098d5effedc97&app_id=03bf8009', \
+			15)
+

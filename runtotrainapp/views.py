@@ -7,87 +7,13 @@ from flask import url_for
 from datetime import datetime, timedelta
 from runtotrainapp import app
 from runtotrainapp import apiKeys
-from runtotrainapp import googleApi
+from runtotrainapp import googleapi
 from runtotrainapp import transportapi
+from runtotrainapp import routequery
 import json
 
-class Location:
-	'''A location object, used to set the longitude and latitude passed into the routing queries'''
-	
-	def __init__(self, address):
-		self.setAddress(address)
-	
-	def setAddress(self, address):
-		self.address=address
-		#validate
-		googleApi.geoCodeLocation(self)
-		
-	def getAddress(self):
-		return self.address	
-		
-	def setLongitude(self, longitude):
-		self.longitude = longitude	
 
-	def getLongitude(self):
-		return self.longitude
-		
-	def setLatitude(self, latitude):
-		self.latitude = latitude	
-
-	def getLatitude(self):
-		return self.latitude
-		
-class RouteQuery:
-	'''Sets up the query parameters. '''
-	
-	def __init__(self, startAddress, destinationAddress, distance, pace, startDateTime, \
-			distanceInKm=True, runFirst=True, delayBeforeBoarding=10):
-		self.startAddress = Location(startAddress)
-		self.destinationAddress = Location(destinationAddress)
-		self.distance = int(distance)
-		self.pace = float(pace)
-		self.startDateTime = datetime.strptime(startDateTime, '%Y-%m-%d %H:%M:%S')
-		self.distanceInKM = distanceInKm
-		self.runFirst = runFirst
-		self.delayBeforeBoarding = delayBeforeBoarding
-		print ('Finished routeQuery setup')
-		
-	def setDistance(self, distance):
-		self.distance = int(distance)
-	
-	def setPace(self, pace):
-		self.pace = int(pace)
-		
-	def setStartAddress(self, address):
-		self.startAddress.setAddress(address)
-		
-	def setDestinationAddress(self, address):
-		self.destinationAddress.setAddress(address)
-	
-	def setDelayBeforeBoarding(self, delayBeforeBoarding):
-		self.delayBeforeBoarding = delayBeforeBoarding
-
-	def setStartDateTime(self, startDateTime):
-		self.startDateTime = startDateTime
-
-	def getDistance(self):
-		return self.distance
-	
-	def getPace(self):
-		return self.pace
-		
-	def getStartAddress(self):
-		return self.startAddress
-		
-	def getDestinationAddress(self):
-		return self.destinationAddress	
-
-	def getDelayBeforeBoarding(self):
-		return self.delayBeforeBoarding	
-
-	def getStartDateTime(self):
-		return self.startDateTime
-
+#import location
 
 #MAIN
 #app = Flask(__name__, instance_relative_config=True)
@@ -104,7 +30,7 @@ def newSearch():
 	try:
 		jsonForm = request.get_json()
 		print (json.dumps(jsonForm, indent=4, sort_keys=True))
-		routeQuery = RouteQuery(startAddress=jsonForm['startAddress'],destinationAddress=jsonForm['destinationAddress'], \
+		routeQuery = routequery.RouteQuery(startAddress=jsonForm['startAddress'],destinationAddress=jsonForm['destinationAddress'], \
 		distance=jsonForm['runDistance'], pace=jsonForm['pace'],	 \
 		startDateTime=jsonForm['startDateTime'])
 
@@ -142,7 +68,6 @@ def TJLnewSearch():
 	{'leg' : 1, 'type' : 'train', 'start_station' : 'New Malden', 'time' : '20:55'}, \
 	{'leg' : 2, 'type' : 'train', 'start_station' : 'Victoria', 'time' : '21:04'} ] } ] }
 	
-
 	#stationResults = {'results' : 'test'}
 
 	stationResultsJson = (json.dumps(stationResults, indent=4, sort_keys=True))
@@ -150,8 +75,6 @@ def TJLnewSearch():
 	print (request.data)
 
 	return stationResultsJson
-
-
 
 
 #if __name__ == '__main__':
