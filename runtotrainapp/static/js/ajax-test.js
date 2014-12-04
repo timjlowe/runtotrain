@@ -61,7 +61,7 @@ function addAcordian(targetElement, accordianNumber, routeData)
 		$('#panel'+ accordianNumber).append(routeDataTable);
     }
 
-function getStations(startAddress, destinationAddress, pace, runDistance, startDateTime, elementId)
+function getStations(startAddress, destinationAddress, pace, runDistance, startDateTime, elementId, progressElementId, buttonId)
 	{
 	//RouteQuery(startAddress=request.form['startAddress'],destinationAddress=request.form['destinationAddress'], \
 	//pace=request.form['pace'],	distance=request.form['runDistance'], startDateTime=request.form['startDateTime'])
@@ -77,6 +77,8 @@ function getStations(startAddress, destinationAddress, pace, runDistance, startD
 		var htmlCode = '';
 		$('#' + elementId).empty();
 
+		$('#' + buttonId).class = "button disabled";
+		showElement(progressElementId);
 		$.ajax({
 			type: 'POST',
 			url: '/newSearch',
@@ -99,52 +101,28 @@ function getStations(startAddress, destinationAddress, pace, runDistance, startD
 						addAcordian(elementId, countOfAccordians, routeResults)
 						countOfAccordians = countOfAccordians +1
 		    		})
+		    	hideElement(progressElementId);
+
 		    },
   			error: function(e) {
 
 				//called when there is an error
+				hideElement(progressElementId);
 				console.log(e.message);
 			}	
 		});	
 	}
-
-function TJLgetStations(location, distance, elementId)
+function hideElement(elementToHide)
 	{
-		//Initial go and displaying results
-		var htmlCode = '';
-
-		$.ajax({
-			type: "POST",
-			url: "/newSearch",
-			contentType: "application/json; charset=utf-8",
-			dataType: 'json',
-			data: {location: location, distance: distance},
-			success: function(data) {
-				//Setup Table
-
-				var table = $("<table>")//.attr("border", "1");
-				table.append(row = $("<tr>"));
-					$.each(data[0], function (key ,value) {
-		 				row.append("<th>" + key);
-		    		})
-
-				$.each(data, function (i,value) {
-					table.append(row = $("<tr>"));
-						$.each(value, function (key,elementValue) {
-		 				row.append("<td>" + elementValue + "</td>");
-		   			})
-		   		})
-
-				$("#"+elementId).html(table)
-
-		    },
-  			error: function(e) {
-				//called when there is an error
-				//console.log(e.message);
-			}	
-		});
-		//displayStationAndRoutes(elementId)
+		console.log('Hide' + elementToHide)
+		$("#"+elementToHide).hide();
 	}
+
+function showElement(elementToShow)
+	{
+		console.log('Show' + elementToShow)
+		$("#"+elementToShow).show();
+	}	
 
 
 

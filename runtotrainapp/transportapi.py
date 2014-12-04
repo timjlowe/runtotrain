@@ -208,16 +208,6 @@ class TransportApi:
 			#Add on run time to Query start time to get earliest train time
 			adjustedTime = self.getTime(self.routeQuery.getStartDateTime(), self.targetStations[i]['runTime'])
 			earliestTrainTime = '{:%Y-%m-%d/%H:%M}'.format(adjustedTime)
-			#earliestTrainTime = '{:%Y-%m-%d/%H:%M}'.format(self.getTime(self.routeQuery.getStartDateTime(), self.targetStations[i][2]))
-				#'differenceFromTargetDistance' 
-				#'distance' 
-				#'runTime' 
-				#'station_code' 
-				#'station_name'
-				#'longitude' 
-				#'latitude' 
-
-			#print (json.dumps(self.targetStations, sort_keys = True, indent = 4))
 
 			if destinationByLongLatOrName=='Name':
 				#TODO Refactor below two queries
@@ -235,7 +225,7 @@ class TransportApi:
 			routingURL = routingBaseURL + routingParams
 			print ('RoutingURL: ' + routingURL)
 			routeResults = self.makeRoutingCall(routingURL, targetStations[i]['runTime'])			
-			print (routeResults)
+
 			if len(routeResults) >= 1:
 				stationRouteResults.append({'station_name' : targetStations[i]['station_name'], \
 					'distance' : targetStations[i]['distance'], \

@@ -113,8 +113,10 @@
                 $('#pace').val(),
                 $('#runDistance').val(),
                 $('#startDateTime').val(),
-                'queryResults2')">
-                Get Me Routes!</a>
+                'queryResults2',
+                'progress',
+                this)">
+                Get Me Some Routes!</a>
               <!--getStations(this.startAddress, this.destinationAddress,
                 this.pace,
                 this.runDistance,
@@ -122,8 +124,12 @@
                 'queryResults2')"> -->
             </div>
           </div>
+          <div class="row" id="progress">
+            <div class="text-center">
+              <img src="{{url_for('static', filename='img/progress.gif')}}">
+            </div>
+          </div>
 				</form>
-        <div class="progress round" id="progress" style="display: none;"></div>
         <div class="row">
             <div class="small-12 medium-8 large-12 columns medium-centered" id="queryResults">
             <!--Table results displayed here -->
@@ -187,6 +193,7 @@
 
     <script>
       $(document).foundation();
+      hideElement("progress")
     </script>
   </body>
 </html>
