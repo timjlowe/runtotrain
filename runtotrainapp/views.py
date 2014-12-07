@@ -27,26 +27,28 @@ def index():
 @app.route('/newSearch', methods=['POST'])
 def newSearch():
 	
-	try:
-		jsonForm = request.get_json()
-		print (json.dumps(jsonForm, indent=4, sort_keys=True))
-		routeQuery = routequery.RouteQuery(startAddress=jsonForm['startAddress'],destinationAddress=jsonForm['destinationAddress'], \
-		distance=jsonForm['runDistance'], pace=jsonForm['pace'],	 \
-		startDateTime=jsonForm['startDateTime'])
+#try:
+	jsonForm = request.get_json()
+	print (json.dumps(jsonForm, indent=4, sort_keys=True))
+	routeQuery = routequery.RouteQuery(startAddress=jsonForm['startAddress'],destinationAddress=jsonForm['destinationAddress'], \
+	distance=jsonForm['runDistance'], pace=jsonForm['pace'],	 \
+	startDateTime=jsonForm['startDateTime'])
 
-		transportApi = transportapi.TransportApi(routeQuery)
-		#Get the stations inline with target run distance
-		stations = transportApi.getStations()
-		#TODO - Setup accordian headers
-		#Should then call for results and populate accordian one at a time.
-		#Then get the routes from those Stations
-		results = (transportApi.routeFromStartStationToDestination(stations))
-		finalResults = (json.dumps(results, indent=4, sort_keys=True))
-		print (finalResults)
-		return finalResults
+	transportApi = transportapi.TransportApi(routeQuery)
+	#Get the stations inline with target run distance
+	stations = transportApi.getStations()
+	#TODO - Setup accordian headers
+	#Should then call for results and populate accordian one at a time.
+	#Then get the routes from those Stations
+	results = (transportApi.routeFromStartStationToDestination(stations))
+	print (results)
+	finalResults = (json.dumps(results, indent=4, sort_keys=True))
+	print (finalResults)
+	return finalResults
 
-	except (ValueError, KeyError, TypeError):
-		return ('Error')
+#except (ValueError, KeyError, TypeError) as e:
+#	print ('Error  %s' % e)
+	#	return ('Error')
 
 #TJL Test Ajax
 @app.route('/TJLnewSearch', methods=['POST'])

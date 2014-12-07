@@ -3,6 +3,7 @@ import apiKeys
 import urllib.request
 import json
 from datetime import datetime, timedelta
+#import datetime
 try:
 	from runtotrainapp import app
 except ImportError:
@@ -27,6 +28,21 @@ class TransportApi:
 
 		adjustedTime = timeToModify + timedelta(minutes=adjustment)
 		return adjustedTime
+
+	def getEarliestHomeArrival(self, routesList):
+		#Should think about arrival next day. ie 00:30 would look earlier than 23:30.
+		j=0
+		print ('getearliest')
+		'''Find earliest time that we would arrive home if travelling from this station.'''
+		arrivalTime = datetime.strptime('23:59:59',"%H:%M:%S")
+		while j < len(routesList):
+			print ('arrival time: ' + routesList[j]['arrivalTime'])
+			newArrivalTime = datetime.strptime(routesList[j]['arrivalTime'],"%H:%M")
+			if newArrivalTime < arrivalTime:
+				arrivalTime = newArrivalTime
+			j=j+1
+		
+		return arrivalTime
 
 	def doStationLookup(self, stationURL):
 		'''Lookup stations within X km of specified point and add to targetStations'''
@@ -170,18 +186,22 @@ class TransportApi:
 				#Legs of a Route
 				while j < len(routes[i]['route_parts']):
 					if routes[i]['route_parts'][j]['mode'] != 'foot':
+						#store arrival time for use in the summary (in case the last leg is foot and so excluded)
+						arrivalTime = routes[i]['route_parts'][j]['arrival_time']
 						legs.append([[0, 'Journey Leg', str(j+1)], \
+							#Do we need to have the index in order to maintain order?
 							[1, 'Mode', routes[i]['route_parts'][j]['mode']], \
 							[2, 'Departure Station', routes[i]['route_parts'][j]['from_point_name']], \
 							[3, 'Destination Station' , routes[i]['route_parts'][j]['to_point_name']], \
 							[4, 'Train terminates' , routes[i]['route_parts'][j]['destination']], \
 							[5, 'Departure Time' , routes[i]['route_parts'][j]['departure_time']], \
-							[6, 'Arrival Time' , routes[i]['route_parts'][j]['arrival_time']], \
+							[6, 'Arrival Time' , arrivalTime], \
 							[7, 'Train Duration' , routes[i]['route_parts'][j]['duration']]]  )
 					j=j+1
 
 				i=i+1
-				processedRouteResults.append({'routeID' : i+1, 'totalDuration' : totalDuration, 'legs' : legs})
+
+				processedRouteResults.append({'routeID' : i, 'totalDuration' : totalDuration, 'arrivalTime' : arrivalTime, 'legs' : legs})
 		else:
 			print ('No results')
 		#print ('Processed Route Results')
@@ -227,11 +247,16 @@ class TransportApi:
 			routeResults = self.makeRoutingCall(routingURL, targetStations[i]['runTime'])			
 
 			if len(routeResults) >= 1:
+				#Find soonest arrival time for this station.
+				earliestHomeArrival = (self.getEarliestHomeArrival(routeResults)).strftime('%H:%M')
 				stationRouteResults.append({'station_name' : targetStations[i]['station_name'], \
 					'distance' : targetStations[i]['distance'], \
 					'runTime' : targetStations[i]['runTime'], \
+					'earliestHomeArrival' : earliestHomeArrival, \
 					'routes' : routeResults })
 			i = i + 1
+
+			stationRouteResults.sort(key=lambda x: x["earliestHomeArrival"])
 
 			if (i >= maximumApiCalls):
 				print ('break!')
@@ -246,7 +271,6 @@ if __name__ == '__main__':
 
 	app = app()	
 	transportapi = TransportApi('')
-	#transportapi.doStationLookup('http://transportapi.com/v3/uk/train/stations/near.json?lon=-0.2427249&lat=51.3481645&page=1&api_key=d9307fd91b0247c607e098d5effedc97&app_id=03bf8009')
-	transportapi.makeRoutingCall('http://transportapi.com/v3/uk/public/journey/from/stop:Waddon/to/lonlat:-0.0235333,51.5054306/at/2014-12-02/14:21.json?modes=train-tube-dlr-overground&api_key=d9307fd91b0247c607e098d5effedc97&app_id=03bf8009', \
-			15)
+	transportapi.doStationLookup('http://transportapi.com/v3/uk/train/stations/near.json?lon=-0.2427249&lat=51.3481645&page=1&api_key=d9307fd91b0247c607e098d5effedc97&app_id=03bf8009')
+	#transportapi.makeRoutingCall('http://transportapi.com/v3/uk/public/journey/from/stop:Waddon/to/lonlat:-0.0235333,51.5054306/at/2014-12-02/14:21.json?modes=train-tube-dlr-overground&api_key=d9307fd91b0247c607e098d5effedc97&app_id=03bf8009', 15)
 

@@ -26,7 +26,7 @@ def geoCodeLocation(location):
 				json.dump(decodedResponse, outfile, sort_keys = True, indent = 4, ensure_ascii=False)
 
 	except urllib.error.URLError as e:
-		print ('Error connecting to: ' + lookupURL + ' Exception: ' + e.reason)
+		print ('Error connecting to: %s Exception: %s' % lookupURL, e.reason)
 		return ('Error')
 
 	print ('Google Response')
