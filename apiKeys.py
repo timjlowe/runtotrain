@@ -6,7 +6,7 @@ def getTransportApiKey():
         if (useTimsApiKeys == True):
                 api_key = {'app_id' : '', 'key' : ''}
         else:
-                api_key = {'app_id' : '03bf8009', 'key' : 'd9307fd91b0247c607e098d5effedc97'}
+                api_key = {'app_id' : '', 'key' : ''}
 
         return api_key
 
